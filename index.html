@@ -107,9 +107,10 @@ const spinDuration = 5200;
 let isSpinning = false;
 let rotation = 0;
 
-// 🎯 Limite de giros: 1 por usuário
+// 🎯 Limite de giros confiável no GitHub
 const maxSpins = 1;
-let spinsLeft = parseInt(localStorage.getItem('spinsLeft') || maxSpins);
+let spinsLeft = localStorage.getItem('spinsLeft');
+spinsLeft = spinsLeft !== null ? parseInt(spinsLeft) : maxSpins;
 updateButtonState();
 
 function updateButtonState(){
@@ -160,7 +161,7 @@ function spin(){
   const prizeIndex = Math.floor(Math.random() * prizes.length);
 
   const targetRotation = 360*spins - (prizeIndex*sliceAngle + sliceAngle/2);
-  rotation += targetRotation; // Acumula rotação para não resetar
+  rotation += targetRotation;
   wheel.style.transition = `transform ${spinDuration/1000}s cubic-bezier(0.33,1,0.68,1)`;
   wheel.style.transform = `rotate(${rotation}deg)`;
 

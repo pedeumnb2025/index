@@ -126,20 +126,19 @@ function createSlices() {
 createSlices();
 
 let isSpinning = false;
-let spinsLeft = 1; // Apenas 1 giro
+let hasSpun = localStorage.getItem("roleta_halloween") === "true";
+
+// Bloqueia botão se já girou antes
+if(hasSpun){
+  spinBtn.disabled = true;
+  spinBtn.style.opacity = 0.5;
+  prizeMessage.style.display = "block";
+}
 
 spinBtn.addEventListener("click", ()=>{
-  if(isSpinning) return;
-  if(spinsLeft <= 0){
-    spinBtn.disabled = true;
-    spinBtn.style.opacity = 0.5;
-    prizeMessage.style.display="block";
-    return;
-  }
+  if(isSpinning || hasSpun) return;
 
   isSpinning = true;
-  spinsLeft--;
-
   const spins = 5;
   const randomAngle = Math.random()*360;
   const targetRotation = 360*spins + randomAngle;
@@ -149,10 +148,12 @@ spinBtn.addEventListener("click", ()=>{
   wheel.style.transform = `rotate(${currentRotation}deg)`;
 
   setTimeout(()=>{
-    prizeMessage.style.display="block"; // exibe a mensagem final
+    prizeMessage.style.display="block";
     spinBtn.disabled = true;
     spinBtn.style.opacity = 0.5;
     isSpinning = false;
+    hasSpun = true;
+    localStorage.setItem("roleta_halloween", "true");
   }, spinDurationMs);
 });
 </script>

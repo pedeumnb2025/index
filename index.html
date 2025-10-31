@@ -5,74 +5,71 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Roleta Halloween 🎃</title>
 <style>
-:root { --bg-hex:#0b1220; --accent:#ff7518; --accent-2:#ff3c00; }
-body{
-  margin:0;
-  background:var(--bg-hex);
-  color:#fff;
-  font-family:'Poppins',sans-serif;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  height:100vh;
-  overflow:hidden;
+:root { --bg-hex: #0b1220; }
+body {
+  margin: 0;
+  background: var(--bg-hex);
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  overflow: hidden;
 }
-#logo{width:120px;margin-bottom:10px}
-#wheel-container{position:relative;width:320px;height:320px;}
-.wheel{
-  width:100%;height:100%;
-  border-radius:50%;
-  border:5px solid var(--accent);
-  box-shadow:0 0 25px #ff7518aa;
-  transition:transform 5s cubic-bezier(0.33,1,0.68,1);
-  position:relative;
-  overflow:hidden;
-  transform:rotate(0deg);
+#logo { width: 120px; margin-bottom: 10px; }
+#wheel-container { position: relative; width: 320px; height: 320px; }
+.wheel {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  border: 5px solid #ff7518;
+  box-shadow: 0 0 25px #ff7518aa;
+  transition: transform 5s cubic-bezier(0.33,1,0.68,1);
+  position: relative; overflow: hidden;
 }
-.slice-text{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform-origin:center;
-  font-size:32px;
-  color:#fff;
-  pointer-events:none;
-  text-shadow:0 0 8px rgba(0,0,0,0.9);
+.slice-text {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform-origin: 0 0;
+  font-size: 32px;
+  color: #fff;
+  pointer-events: none;
+  text-shadow: 0 0 8px rgba(0,0,0,0.9);
 }
-.pointer{
-  position:absolute;
-  bottom:-8px;
-  left:50%;
-  transform:translateX(-50%);
-  width:0;height:0;
-  border-left:12px solid transparent;
-  border-right:12px solid transparent;
-  border-bottom:20px solid var(--accent-2);
-  z-index:10;
-  filter:drop-shadow(0 0 5px var(--accent-2));
+.pointer {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 20px solid #ff3c00; /* ponta para baixo */
+  z-index: 10;
+  filter: drop-shadow(0 0 5px #ff3c00);
 }
-#top-prize{
-  margin-top:20px;
-  font-size:28px;
-  font-weight:bold;
-  color:var(--accent);
-  text-shadow:0 0 10px var(--accent-2);
-  display:none;
-  text-align:center;
+button {
+  margin-top: 20px; padding: 12px 25px; font-size: 17px;
+  background: linear-gradient(45deg,#ff7518,#ff3c00);
+  border: none; border-radius: 50px; color:#fff; cursor:pointer;
+  transition: 0.3s; box-shadow:0 0 12px #ff3c00aa;
 }
-button{
-  margin-top:20px;padding:12px 25px;font-size:17px;
-  background:linear-gradient(45deg,var(--accent),var(--accent-2));
-  border:none;border-radius:50px;color:#fff;cursor:pointer;
-  transition:.3s;box-shadow:0 0 12px #ff3c00aa;
+button:hover { transform: scale(1.05); box-shadow: 0 0 20px #ff3c00; }
+#prize-message {
+  margin-top: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #ff7518;
+  text-shadow: 0 0 10px #ff3c00;
+  display: none;
 }
-button:hover{transform:scale(1.05);box-shadow:0 0 20px #ff3c00;}
 @media (max-width:500px){
   #wheel-container{width:270px;height:270px;}
-  .slice-text{font-size:28px;}
-  #top-prize{font-size:24px;margin-top:15px;}
+  .slice-text{font-size:40px;} 
   button{font-size:15px;padding:10px 20px;}
+  #prize-message{font-size:24px;}
 }
 </style>
 </head>
@@ -83,104 +80,78 @@ button:hover{transform:scale(1.05);box-shadow:0 0 20px #ff3c00;}
   <div class="wheel" id="wheel"></div>
 </div>
 <button id="spin">🎃 Girar Roleta</button>
-<div id="top-prize"></div>
+<div id="prize-message"></div>
 
 <script>
 const wheel = document.getElementById("wheel");
 const spinBtn = document.getElementById("spin");
-const topPrize = document.getElementById("top-prize");
+const prizeMessage = document.getElementById("prize-message");
 
+// 10 emojis diferentes, cada fatia com seu próprio prêmio
 const prizes = [
   { text: "👻", color: "#ff7518" },
   { text: "🧟", color: "#ffb86b" },
   { text: "🦇", color: "#ff3c00" },
   { text: "💀", color: "#7d00ff" },
-  { text: "👻", color: "#ff007f" },
   { text: "🎃", color: "#ffaa00" },
   { text: "🧛", color: "#d000ff" },
-  { text: "🦇", color: "#ff5500" },
-  { text: "💀", color: "#ff9800" },
-  { text: "🕷️", color: "#ff0066" }
+  { text: "🕷️", color: "#ff0066" },
+  { text: "🦉", color: "#ff5500" },
+  { text: "🧙", color: "#ff9800" },
+  { text: "🕸️", color: "#ff00aa" }
 ];
 
-const spinDuration = 5200;
-let isSpinning = false;
-let rotation = 0;
+const spinDurationMs = 5200;
+const sliceAngle = 360 / prizes.length;
+let currentRotation = 0;
 
-// 🎯 Limite de giros confiável no GitHub
-const maxSpins = 1;
-let spinsLeft = localStorage.getItem('spinsLeft');
-spinsLeft = spinsLeft !== null ? parseInt(spinsLeft) : maxSpins;
-updateButtonState();
+// gradiente da roleta
+wheel.style.background = `conic-gradient(${prizes.map((p,i)=>`${p.color} ${i*sliceAngle}deg ${(i+1)*sliceAngle}deg`).join(",")})`;
 
-function updateButtonState(){
-  if(spinsLeft <= 0){
-    spinBtn.disabled = true;
-    spinBtn.textContent = "Giros esgotados";
-  } else {
-    spinBtn.disabled = false;
-    spinBtn.textContent = "🎃 Girar Roleta";
-  }
-}
-
-// 🎯 Construção da roleta
-function buildWheel(){
-  const n = prizes.length;
-  const slice = 360 / n;
-  const gradient = prizes.map((p,i)=> `${p.color} ${i*slice}deg ${(i+1)*slice}deg`).join(",");
-  wheel.style.background = `conic-gradient(${gradient})`;
-
+// adiciona emojis nas fatias
+function createSlices() {
   const wheelSize = wheel.offsetWidth;
-  let radius = wheelSize / 2 - wheelSize*0.15;
+  let radius = wheelSize/2 - 50;
+  if (wheelSize < 300) radius = wheelSize/2 - 20;
 
-  wheel.innerHTML = "";
   prizes.forEach((p,i)=>{
-    const el = document.createElement("div");
-    el.className = "slice-text";
-    el.textContent = p.text;
-    const angle = i*slice + slice/2;
-    el.style.transform = `rotate(${angle}deg) translateY(-${radius}px) rotate(${-angle}deg)`;
-    wheel.appendChild(el);
+    const div = document.createElement("div");
+    div.className = "slice-text";
+    div.textContent = p.text;
+    const angle = (i*sliceAngle + sliceAngle/2) * Math.PI/180;
+    const x = radius * Math.cos(angle);
+    const y = radius * Math.sin(angle);
+    div.style.transform = `translate(${x}px,${y}px) rotate(${i*sliceAngle + sliceAngle/2 + 90}deg)`;
+    wheel.appendChild(div);
   });
 }
-buildWheel();
+createSlices();
 
-// 🎯 Função de giro
-function spin(){
+let isSpinning = false;
+spinBtn.addEventListener("click", ()=>{
   if(isSpinning) return;
-  if(spinsLeft <= 0){
-    alert("Você já usou seu giro!");
-    return;
-  }
-
   isSpinning = true;
-  topPrize.style.display = "none";
+  prizeMessage.style.display="none";
 
-  const sliceAngle = 360 / prizes.length;
   const spins = 5;
-  const prizeIndex = Math.floor(Math.random() * prizes.length);
+  const randomAngle = Math.random()*360;
+  const targetRotation = 360*spins + randomAngle;
+  currentRotation += targetRotation;
 
-  const targetRotation = 360*spins - (prizeIndex*sliceAngle + sliceAngle/2);
-  rotation += targetRotation;
-  wheel.style.transition = `transform ${spinDuration/1000}s cubic-bezier(0.33,1,0.68,1)`;
-  wheel.style.transform = `rotate(${rotation}deg)`;
+  wheel.style.transition = `transform ${spinDurationMs/1000}s cubic-bezier(0.33,1,0.68,1)`;
+  wheel.style.transform = `rotate(${currentRotation}deg)`;
 
-  // 🎯 Mostrar prêmio ao fim do giro
-  wheel.addEventListener('transitionend', function handler(){
-    const prize = prizes[prizeIndex];
-    topPrize.textContent = `🎉 Você ganhou: ${prize.text}`;
-    topPrize.style.display = "block";
-    isSpinning = false;
-
-    spinsLeft--;
-    localStorage.setItem('spinsLeft', spinsLeft);
-    updateButtonState();
-
-    wheel.removeEventListener('transitionend', handler);
-  });
-}
-
-spinBtn.addEventListener("click", spin);
+  setTimeout(()=>{
+    // Normaliza a rotação entre 0 e 360
+    const normalizedRotation = currentRotation % 360;
+    // Calcula a fatia que está exatamente sob a seta (topo)
+    let prizeIndex = Math.floor((normalizedRotation + sliceAngle/2) / sliceAngle);
+    prizeIndex = (prizes.length - prizeIndex) % prizes.length; // corrige inversão
+    prizeMessage.textContent = `Você ganhou: ${prizes[prizeIndex].text}`;
+    prizeMessage.style.display="block";
+    isSpinning=false;
+  }, spinDurationMs);
+});
 </script>
 </body>
 </html>

@@ -42,13 +42,13 @@ body{
 }
 .pointer{
   position:absolute;
-  top:-8px;
+  bottom:-8px;
   left:50%;
   transform:translateX(-50%);
   width:0;height:0;
   border-left:12px solid transparent;
   border-right:12px solid transparent;
-  border-top:20px solid var(--accent-2);
+  border-bottom:20px solid var(--accent-2);
   z-index:10;
   filter:drop-shadow(0 0 5px var(--accent-2));
 }
@@ -107,9 +107,9 @@ const spinDuration = 5200;
 let isSpinning = false;
 let rotation = 0;
 
-// 🎯 Limite de giros: apenas 1 por usuário
+// 🎯 Limite de giros: 1 por usuário
 const maxSpins = 1;
-let spinsLeft = parseInt(localStorage.getItem('spinsLeft')) ?? maxSpins;
+let spinsLeft = parseInt(localStorage.getItem('spinsLeft') || maxSpins);
 updateButtonState();
 
 function updateButtonState(){
@@ -130,8 +130,7 @@ function buildWheel(){
   wheel.style.background = `conic-gradient(${gradient})`;
 
   const wheelSize = wheel.offsetWidth;
-  let radius = wheelSize / 2 - 50;
-  if (wheelSize < 300) radius = wheelSize / 2 - 25;
+  let radius = wheelSize / 2 - wheelSize*0.15;
 
   wheel.innerHTML = "";
   prizes.forEach((p,i)=>{
@@ -139,7 +138,7 @@ function buildWheel(){
     el.className = "slice-text";
     el.textContent = p.text;
     const angle = i*slice + slice/2;
-    el.style.transform = `rotate(${angle}deg) translateY(-${radius}px) rotate(${90 - angle}deg)`;
+    el.style.transform = `rotate(${angle}deg) translateY(-${radius}px) rotate(${-angle}deg)`;
     wheel.appendChild(el);
   });
 }
@@ -161,12 +160,12 @@ function spin(){
   const prizeIndex = Math.floor(Math.random() * prizes.length);
 
   const targetRotation = 360*spins - (prizeIndex*sliceAngle + sliceAngle/2);
-  rotation = targetRotation;
-
+  rotation += targetRotation; // Acumula rotação para não resetar
   wheel.style.transition = `transform ${spinDuration/1000}s cubic-bezier(0.33,1,0.68,1)`;
   wheel.style.transform = `rotate(${rotation}deg)`;
 
-  setTimeout(()=>{
+  // 🎯 Mostrar prêmio ao fim do giro
+  wheel.addEventListener('transitionend', function handler(){
     const prize = prizes[prizeIndex];
     topPrize.textContent = `🎉 Você ganhou: ${prize.text}`;
     topPrize.style.display = "block";
@@ -175,7 +174,9 @@ function spin(){
     spinsLeft--;
     localStorage.setItem('spinsLeft', spinsLeft);
     updateButtonState();
-  }, spinDuration+50);
+
+    wheel.removeEventListener('transitionend', handler);
+  });
 }
 
 spinBtn.addEventListener("click", spin);

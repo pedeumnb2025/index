@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roleta Halloween 🎃</title>
+<title>Roleta Premiada 🍔</title>
 <style>
-:root { --bg-hex: #0b1220; }
+:root { --bg-hex: #1a1a1a; }
 body {
   margin: 0;
   background: var(--bg-hex);
@@ -23,8 +23,8 @@ body {
 .wheel {
   width: 100%; height: 100%;
   border-radius: 50%;
-  border: 5px solid #ff7518;
-  box-shadow: 0 0 25px #ff7518aa;
+  border: 5px solid #ffb300;
+  box-shadow: 0 0 25px #ffb300aa;
   transition: transform 5s cubic-bezier(0.33,1,0.68,1);
   position: relative; overflow: hidden;
 }
@@ -46,31 +46,31 @@ body {
   height: 0;
   border-left: 12px solid transparent;
   border-right: 12px solid transparent;
-  border-top: 20px solid #ff3c00; 
+  border-top: 20px solid #ffb300; 
   z-index: 10;
-  filter: drop-shadow(0 0 5px #ff3c00);
+  filter: drop-shadow(0 0 5px #ffb300);
 }
 button {
   margin-top: 20px; padding: 12px 25px; font-size: 17px;
-  background: linear-gradient(45deg,#ff7518,#ff3c00);
+  background: linear-gradient(45deg,#ffb300,#ff5722);
   border: none; border-radius: 50px; color:#fff; cursor:pointer;
-  transition: 0.3s; box-shadow:0 0 12px #ff3c00aa;
+  transition: 0.3s; box-shadow:0 0 12px #ff9800aa;
 }
-button:hover { transform: scale(1.05); box-shadow: 0 0 20px #ff3c00; }
+button:hover { transform: scale(1.05); box-shadow: 0 0 20px #ffb300; }
 #prize-message {
   margin-top: 15px;
-  font-size: 28px;
+  font-size: 26px;
   font-weight: bold;
-  color: #ff7518;
-  text-shadow: 0 0 10px #ff3c00;
+  color: #ffb300;
+  text-shadow: 0 0 10px #ff9800;
   display: none;
   text-align: center;
 }
 @media (max-width:500px){
   #wheel-container{width:270px;height:270px;}
-  .slice-text{font-size:40px;} 
+  .slice-text{font-size:36px;} 
   button{font-size:15px;padding:10px 20px;}
-  #prize-message{font-size:24px;}
+  #prize-message{font-size:22px;}
 }
 </style>
 </head>
@@ -80,7 +80,7 @@ button:hover { transform: scale(1.05); box-shadow: 0 0 20px #ff3c00; }
   <div class="pointer"></div>
   <div class="wheel" id="wheel"></div>
 </div>
-<button id="spin">🎃 Girar Roleta</button>
+<button id="spin">🍔 Girar Roleta</button>
 <div id="prize-message">Retire uma print e envie em nosso WhatsApp</div>
 
 <script>
@@ -88,23 +88,25 @@ const wheel = document.getElementById("wheel");
 const spinBtn = document.getElementById("spin");
 const prizeMessage = document.getElementById("prize-message");
 
+// 🍔 Tema de hamburgueria com quantidades conforme gabarito
 const prizes = [
-  { text: "👻", color: "#ff7518" },
-  { text: "🧟", color: "#ffb86b" },
-  { text: "🦇", color: "#ff3c00" },
-  { text: "💀", color: "#7d00ff" },
-  { text: "🎃", color: "#ffaa00" },
-  { text: "🧛", color: "#d000ff" },
-  { text: "🕷️", color: "#ff0066" },
-  { text: "👻", color: "#ff5500" },
-  { text: "🦇", color: "#ff9800" },
-  { text: "💀", color: "#ff00aa" }
+  { text: "🍟", color: "#ffb300", label: "2 porções de polenta 200g + molho" },
+  { text: "🍟", color: "#ff9800", label: "2 porções de polenta 200g + molho" },
+  { text: "🥤", color: "#ff7043", label: "1 Coca 2L" },
+  { text: "🍔", color: "#f44336", label: "1 Xis bagunça ou catupiry" },
+  { text: "🥓", color: "#e64a19", label: "1 potinho de bacon ou cheddar" },
+  { text: "🍠", color: "#ff6f00", label: "2 batatas rústicas 100g + molho" },
+  { text: "🍠", color: "#ff8f00", label: "2 batatas rústicas 100g + molho" },
+  { text: "🍟", color: "#ffa000", label: "2 batatas palito 100g + molho" },
+  { text: "🍟", color: "#ffc107", label: "2 batatas palito 100g + molho" },
+  { text: "🍔", color: "#ff5722", label: "1 batata 200g + molho" }
 ];
 
 const spinDurationMs = 5200;
 const sliceAngle = 360 / prizes.length;
 let currentRotation = 0;
 
+// Fundo colorido
 wheel.style.background = `conic-gradient(${prizes.map((p,i)=>`${p.color} ${i*sliceAngle}deg ${(i+1)*sliceAngle}deg`).join(",")})`;
 
 function createSlices() {
@@ -126,14 +128,7 @@ function createSlices() {
 createSlices();
 
 let isSpinning = false;
-let hasSpun = localStorage.getItem("roleta_halloween") === "true";
-
-// Bloqueia botão se já girou antes
-if(hasSpun){
-  spinBtn.disabled = true;
-  spinBtn.style.opacity = 0.5;
-  prizeMessage.style.display = "block";
-}
+let hasSpun = false; // 🔄 resetado
 
 spinBtn.addEventListener("click", ()=>{
   if(isSpinning || hasSpun) return;
@@ -148,12 +143,17 @@ spinBtn.addEventListener("click", ()=>{
   wheel.style.transform = `rotate(${currentRotation}deg)`;
 
   setTimeout(()=>{
+    const normalizedRotation = currentRotation % 360;
+    const winningIndex = Math.floor((360 - normalizedRotation) / sliceAngle) % prizes.length;
+    const prize = prizes[winningIndex];
+
+    prizeMessage.innerHTML = `🎉 Você ganhou: <br>${prize.text} ${prize.label}`;
     prizeMessage.style.display="block";
+
     spinBtn.disabled = true;
     spinBtn.style.opacity = 0.5;
     isSpinning = false;
     hasSpun = true;
-    localStorage.setItem("roleta_halloween", "true");
   }, spinDurationMs);
 });
 </script>

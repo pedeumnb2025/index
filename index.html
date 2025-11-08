@@ -88,18 +88,17 @@ const wheel = document.getElementById("wheel");
 const spinBtn = document.getElementById("spin");
 const prizeMessage = document.getElementById("prize-message");
 
-// 🍔 Tema de hamburgueria com quantidades conforme gabarito
 const prizes = [
-  { text: "🍟", color: "#ffb300", label: "2 porções de polenta 200g + molho" },
-  { text: "🍟", color: "#ff9800", label: "2 porções de polenta 200g + molho" },
-  { text: "🥤", color: "#ff7043", label: "1 Coca 2L" },
-  { text: "🍔", color: "#f44336", label: "1 Xis bagunça ou catupiry" },
-  { text: "🥓", color: "#e64a19", label: "1 potinho de bacon ou cheddar" },
-  { text: "🍠", color: "#ff6f00", label: "2 batatas rústicas 100g + molho" },
-  { text: "🍠", color: "#ff8f00", label: "2 batatas rústicas 100g + molho" },
-  { text: "🍟", color: "#ffa000", label: "2 batatas palito 100g + molho" },
-  { text: "🍟", color: "#ffc107", label: "2 batatas palito 100g + molho" },
-  { text: "🍔", color: "#ff5722", label: "1 batata 200g + molho" }
+  { text: "🍟", color: "#ffb300" },
+  { text: "🍟", color: "#ff9800" },
+  { text: "🥤", color: "#ff7043" },
+  { text: "🍔", color: "#f44336" },
+  { text: "🥓", color: "#e64a19" },
+  { text: "🍠", color: "#ff6f00" },
+  { text: "🍠", color: "#ff8f00" },
+  { text: "🍟", color: "#ffa000" },
+  { text: "🍟", color: "#ffc107" },
+  { text: "🍔", color: "#ff5722" }
 ];
 
 const spinDurationMs = 5200;
@@ -109,6 +108,7 @@ let currentRotation = 0;
 // Fundo colorido
 wheel.style.background = `conic-gradient(${prizes.map((p,i)=>`${p.color} ${i*sliceAngle}deg ${(i+1)*sliceAngle}deg`).join(",")})`;
 
+// Cria os emojis
 function createSlices() {
   const wheelSize = wheel.offsetWidth;
   let radius = wheelSize/2 - 50;
@@ -127,8 +127,16 @@ function createSlices() {
 }
 createSlices();
 
+// Estado de controle
 let isSpinning = false;
-let hasSpun = false; // 🔄 resetado
+let hasSpun = localStorage.getItem("roleta_girada") === "true";
+
+// Desativa botão se já girou
+if(hasSpun){
+  spinBtn.disabled = true;
+  spinBtn.style.opacity = 0.5;
+  prizeMessage.style.display = "block";
+}
 
 spinBtn.addEventListener("click", ()=>{
   if(isSpinning || hasSpun) return;
@@ -143,15 +151,10 @@ spinBtn.addEventListener("click", ()=>{
   wheel.style.transform = `rotate(${currentRotation}deg)`;
 
   setTimeout(()=>{
-    const normalizedRotation = currentRotation % 360;
-    const winningIndex = Math.floor((360 - normalizedRotation) / sliceAngle) % prizes.length;
-    const prize = prizes[winningIndex];
-
-    prizeMessage.innerHTML = `🎉 Você ganhou: <br>${prize.text} ${prize.label}`;
-    prizeMessage.style.display="block";
-
+    prizeMessage.style.display = "block";
     spinBtn.disabled = true;
     spinBtn.style.opacity = 0.5;
+    localStorage.setItem("roleta_girada", "true"); // ✅ bloqueia novos giros
     isSpinning = false;
     hasSpun = true;
   }, spinDurationMs);

@@ -88,24 +88,25 @@ const wheel = document.getElementById("wheel");
 const spinBtn = document.getElementById("spin");
 const prizeMessage = document.getElementById("prize-message");
 
+// 🎯 Gabarito final (sem mostrar resultado)
 const prizes = [
-  { text: "🍟", color: "#ffb300" },
-  { text: "🍟", color: "#ff9800" },
-  { text: "🥤", color: "#ff7043" },
-  { text: "🍔", color: "#f44336" },
-  { text: "🥓", color: "#e64a19" },
-  { text: "🍠", color: "#ff6f00" },
-  { text: "🍠", color: "#ff8f00" },
-  { text: "🍟", color: "#ffa000" },
-  { text: "🍟", color: "#ffc107" },
-  { text: "🍔", color: "#ff5722" }
+  { text: "🧀", color: "#ffb300" }, // Polenta 1
+  { text: "🧀", color: "#ff9800" }, // Polenta 2
+  { text: "🥤", color: "#ff7043" }, // Coca 2L
+  { text: "🍔", color: "#f44336" }, // Xis
+  { text: "🥓", color: "#e64a19" }, // Bacon/Cheddar
+  { text: "🥔", color: "#ff6f00" }, // Batata rústica 1
+  { text: "🍟", color: "#ffa000" }, // Batata palito 1
+  { text: "🥔", color: "#ff8f00" }, // Batata rústica 2
+  { text: "🍟", color: "#ffc107" }, // Batata palito 2
+  { text: "🍠", color: "#ff5722" }  // Batata 200g
 ];
 
 const spinDurationMs = 5200;
 const sliceAngle = 360 / prizes.length;
-let currentRotation = 0;
+let currentRotation = parseFloat(localStorage.getItem("roleta_angulo")) || 0;
 
-// Fundo colorido
+// Fundo da roleta
 wheel.style.background = `conic-gradient(${prizes.map((p,i)=>`${p.color} ${i*sliceAngle}deg ${(i+1)*sliceAngle}deg`).join(",")})`;
 
 // Cria os emojis
@@ -127,11 +128,14 @@ function createSlices() {
 }
 createSlices();
 
-// Estado de controle
+// Mantém posição após reload
+wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+// Controle de giros
 let isSpinning = false;
 let hasSpun = localStorage.getItem("roleta_girada") === "true";
 
-// Desativa botão se já girou
+// Bloqueia se já girou
 if(hasSpun){
   spinBtn.disabled = true;
   spinBtn.style.opacity = 0.5;
@@ -151,14 +155,19 @@ spinBtn.addEventListener("click", ()=>{
   wheel.style.transform = `rotate(${currentRotation}deg)`;
 
   setTimeout(()=>{
+    localStorage.setItem("roleta_girada", "true");   
+    localStorage.setItem("roleta_angulo", currentRotation % 360); 
     prizeMessage.style.display = "block";
     spinBtn.disabled = true;
     spinBtn.style.opacity = 0.5;
-    localStorage.setItem("roleta_girada", "true"); // ✅ bloqueia novos giros
     isSpinning = false;
     hasSpun = true;
   }, spinDurationMs);
 });
+
+// 🔄 Reset manual (use só pra testar)
+localStorage.removeItem("roleta_girada");
+localStorage.removeItem("roleta_angulo");
 </script>
 </body>
 </html>

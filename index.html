@@ -3,12 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roleta Premiada 🍔</title>
+<title>Roleta Premiada 🎄</title>
 <style>
+
+/* =====================================
+   ===== BACKGROUND PERSONALIZÁVEL =====
+   ===================================== */
+#background {
+  position: fixed;
+  inset: 0;
+  background: url('https://imgur.com/4efMnN3.png') center/cover no-repeat;
+  z-index: -1;
+}
+
+/* Cor fallback caso a imagem não carregue */
 :root { --bg-hex: #1a1a1a; }
+
+/* ===== CONFIGURAÇÃO GERAL ===== */
 body {
   margin: 0;
-  background: var(--bg-hex);
   color: #fff;
   font-family: 'Poppins', sans-serif;
   display: flex;
@@ -18,7 +31,11 @@ body {
   height: 100vh;
   overflow: hidden;
 }
-#logo { width: 120px; margin-bottom: 10px; }
+
+/* ===== LOGO ===== */
+#logo { width: 200px; margin-bottom: 10px; }
+
+/* ===== ROLETA ===== */
 #wheel-container { position: relative; width: 320px; height: 320px; }
 .wheel {
   width: 100%; height: 100%;
@@ -50,6 +67,8 @@ body {
   z-index: 10;
   filter: drop-shadow(0 0 5px #ffb300);
 }
+
+/* ===== BOTÃO / MENSAGEM ===== */
 button {
   margin-top: 20px; padding: 12px 25px; font-size: 17px;
   background: linear-gradient(45deg,#ffb300,#ff5722);
@@ -66,6 +85,7 @@ button:hover { transform: scale(1.05); box-shadow: 0 0 20px #ffb300; }
   display: none;
   text-align: center;
 }
+
 @media (max-width:500px){
   #wheel-container{width:270px;height:270px;}
   .slice-text{font-size:36px;} 
@@ -75,31 +95,39 @@ button:hover { transform: scale(1.05); box-shadow: 0 0 20px #ffb300; }
 </style>
 </head>
 <body>
-<img id="logo" src="https://i.imgur.com/7UlckaL.png" alt="Logo da loja">
+
+<!-- BACKGROUND -->
+<div id="background"></div>
+
+<!-- LOGO -->
+<img id="logo" src="https://imgur.com/S0kLzyV.png" alt="Logo da loja">
+
+<!-- ROLETA -->
 <div id="wheel-container">
   <div class="pointer"></div>
   <div class="wheel" id="wheel"></div>
 </div>
+
 <button id="spin">🍔 Girar Roleta</button>
-<div id="prize-message">Retire uma print e envie em nosso WhatsApp</div>
+<div id="prize-message">Retire uma print e envie em nosso WhatsApp 🎅</div>
 
 <script>
 const wheel = document.getElementById("wheel");
 const spinBtn = document.getElementById("spin");
 const prizeMessage = document.getElementById("prize-message");
 
-// 🎯 Gabarito final (sem exibir resultado)
+// 🎯 FATIAS NATALINAS
 const prizes = [
-  { text: "🧀", color: "#ffb300" }, // Polenta 1
-  { text: "🧀", color: "#ff9800" }, // Polenta 2
-  { text: "🥤", color: "#ff7043" }, // Coca 2L
-  { text: "🍔", color: "#f44336" }, // Xis
-  { text: "🥓", color: "#e64a19" }, // Bacon/Cheddar
-  { text: "🥔", color: "#ff6f00" }, // Batata rústica 1
-  { text: "🍟", color: "#ffa000" }, // Batata palito 1
-  { text: "🥔", color: "#ff8f00" }, // Batata rústica 2
-  { text: "🍟", color: "#ffc107" }, // Batata palito 2
-  { text: "🍠", color: "#ff5722" }  // Batata 200g
+  { text: "🎅", color: "#ffb300" },
+  { text: "🎁", color: "#ff9800" },
+  { text: "⛄", color: "#ff7043" },
+  { text: "🎄", color: "#f44336" },
+  { text: "⭐",  color: "#e64a19" },
+  { text: "🍪", color: "#ff6f00" },
+  { text: "🔔", color: "#ffa000" },
+  { text: "🧦", color: "#ff8f00" },
+  { text: "🛷", color: "#ffc107" },
+  { text: "🕯️",color: "#ff5722" }
 ];
 
 const spinDurationMs = 5200;
@@ -136,7 +164,7 @@ wheel.style.transform = `rotate(${currentRotation}deg)`;
 let isSpinning = false;
 let hasSpun = localStorage.getItem("roleta_girada") === "true";
 
-// Bloqueia botão se já girou antes
+// Bloqueia se já girou antes
 if(hasSpun){
   spinBtn.disabled = true;
   spinBtn.style.opacity = 0.5;
@@ -156,7 +184,6 @@ spinBtn.addEventListener("click", ()=>{
   wheel.style.transform = `rotate(${currentRotation}deg)`;
 
   setTimeout(()=>{
-    // 🔒 Travamento real: grava e mantém mesmo após reload
     localStorage.setItem("roleta_girada", "true");   
     localStorage.setItem("roleta_angulo", currentRotation % 360); 
     prizeMessage.style.display = "block";

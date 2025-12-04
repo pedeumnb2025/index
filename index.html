@@ -108,7 +108,7 @@ button:hover { transform: scale(1.05); box-shadow: 0 0 20px #ffb300; }
   <div class="wheel" id="wheel"></div>
 </div>
 
-<button id="spin">🍔 Girar Roleta</button>
+<button id="spin">🎅 Girar Roleta</button>
 <div id="prize-message">Retire uma print e envie em nosso WhatsApp 🎅</div>
 
 <script>
@@ -132,7 +132,9 @@ const prizes = [
 
 const spinDurationMs = 5200;
 const sliceAngle = 360 / prizes.length;
-let currentRotation = parseFloat(localStorage.getItem("roleta_angulo")) || 0;
+
+// 🔁 NOVAS CHAVES → “RESETA” PRA TODO MUNDO
+let currentRotation = parseFloat(localStorage.getItem("roleta_angulo_natal")) || 0;
 
 // Fundo colorido da roleta
 wheel.style.background = `conic-gradient(${prizes.map((p,i)=>
@@ -160,11 +162,11 @@ createSlices();
 // Mantém posição após reload
 wheel.style.transform = `rotate(${currentRotation}deg)`;
 
-// Controle de giros
+// Controle de giros (AGORA COM NOVA CHAVE)
 let isSpinning = false;
-let hasSpun = localStorage.getItem("roleta_girada") === "true";
+let hasSpun = localStorage.getItem("roleta_girada_natal") === "true";
 
-// Bloqueia se já girou antes
+// Bloqueia se já girou antes (na NOVA versão)
 if(hasSpun){
   spinBtn.disabled = true;
   spinBtn.style.opacity = 0.5;
@@ -184,8 +186,9 @@ spinBtn.addEventListener("click", ()=>{
   wheel.style.transform = `rotate(${currentRotation}deg)`;
 
   setTimeout(()=>{
-    localStorage.setItem("roleta_girada", "true");   
-    localStorage.setItem("roleta_angulo", currentRotation % 360); 
+    // 🔒 Travamento real: grava e mantém mesmo após reload (USANDO AS NOVAS CHAVES)
+    localStorage.setItem("roleta_girada_natal", "true");   
+    localStorage.setItem("roleta_angulo_natal", currentRotation % 360); 
     prizeMessage.style.display = "block";
     spinBtn.disabled = true;
     spinBtn.style.opacity = 0.5;
